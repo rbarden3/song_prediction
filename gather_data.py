@@ -92,22 +92,44 @@ def get_single_playlist(path):
 # * Currently working on this.
 def setup_model(array_of_df):
     model_df = array_of_df[0]
-    col_labels = get_col_names(model_df)
-    X = pd.DataFrame(array_of_df)
-    y = col_labels
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
+    X = array_of_df[0]['x']
+    print('X in setup_model', X)
+    y = array_of_df[0]['y']
+    print('y in setup_model', y)
 
-    classifier = RandomForestClassifier(
-        n_estimators=20, criterion='gini', random_state=1, max_depth=3)
-    classifier.fit(X_train, y_train)
-    y_pred = classifier.predict(X_test)
-    print(y_pred)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
+    X_train = np.array(X_train).reshape(-1, 1)
+    X_test = np.array(X_test).reshape(-1, 1)
+
+    regressor = RandomForestRegressor()
+    regressor.fit(X_train, y_train)
+    y_pred = regressor.predict(X_test)
+    print("y_pred -> ", y_pred)
 # %%
+
+
 def split_x_y(in_df):
-    in_df,last_row=in_df.drop(in_df.tail(1).index),in_df.tail(1)
+    # Col names
+    # ['acousticness', 'analysis_url', 'danceability', 'duration_ms', 'energy', 'id', 'instrumentalness',
+    # 'key', 'liveness', 'loudness', 'mode', 'speechiness', 'tempo', 'time_signature', 'track_href', 'type', 'uri', 'valence']
+    in_df = in_df.drop(['analysis_url', 'track_href',
+                       'uri', 'id', 'type'], axis='columns')
+    in_df, last_row = in_df.drop(in_df.tail(1).index), in_df.tail(1)
     x = in_df.mean().tolist()
     y = last_row.values.tolist()[0]
-    return {'x':x,'y':y}
+
+    return {'x': x, 'y': y}
+
+# %%
+
+
+def split_df_array(arr_df):
+    features_arr = []
+    for i in range(len(arr_df)):
+        features_arr.append(split_x_y(arr_df[i]))
+
+    return features_arr
+
 
 # %%
 # try:
@@ -118,4 +140,5 @@ print(path)
 # %%
 array_df = get_single_playlist(path)
 # %%
-setup_model(array_df)
+feat_arr = split_df_array(array_df)
+setup_model(feat_arr)
