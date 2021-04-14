@@ -1,3 +1,4 @@
+# %%
 """
     usage:
         python print.py path-mpd/
@@ -12,6 +13,10 @@ from spotipy.oauth2 import SpotifyClientCredentials
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
+
+# Set environment variables
+os.environ['SPOTIPY_CLIENT_ID'] = 'cf066d284bdd459f9480f4d682555e48'
+os.environ['SPOTIPY_CLIENT_SECRET'] = 'e7453f0113a042ada35df372168a3481'
 
 # Spotify creds
 # export SPOTIPY_CLIENT_ID='cf066d284bdd459f9480f4d682555e48'
@@ -61,7 +66,8 @@ def get_col_names(dataframe_df):
 def get_single_playlist(path):
     # Open path to json file, load json data
     data = json.load(open(path))
-    for i in range(len(data["playlists"])):
+    # for i in range(len(data["playlists"])):
+    for i in range(1):
         # reset track_uri_arr
         track_uri_arr = []
         ith_playlist = data['playlists'][i]
@@ -85,7 +91,8 @@ def get_single_playlist(path):
 
 # * Currently working on this.
 def setup_model(array_of_df):
-    col_labels = get_col_names(array_of_df[0])
+    model_df = array_of_df[0]
+    col_labels = get_col_names(model_df)
     X = pd.DataFrame(array_of_df)
     y = col_labels
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
@@ -95,12 +102,20 @@ def setup_model(array_of_df):
     classifier.fit(X_train, y_train)
     y_pred = classifier.predict(X_test)
     print(y_pred)
+# %%
+def split_x_y(in_df):
+    in_df,last_row=in_df.drop(in_df.tail(1).index),in_df.tail(1)
+    x = in_df.mean().tolist()
+    y = last_row.values.tolist()[0]
+    return {'x':x,'y':y}
 
-
-try:
-    path = sys.argv[1]
-except IndexError:
-    path = Path(__file__)
-    path = path.parent / 'data' / 'mpd.slice.0-999.json'
+# %%
+# try:
+#     path = sys.argv[1]
+# except IndexError:
+path = Path(__file__).parent / 'data' / 'mpd.slice.0-999.json'
+print(path)
+# %%
 array_df = get_single_playlist(path)
+# %%
 setup_model(array_df)
