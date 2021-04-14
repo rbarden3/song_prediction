@@ -4,6 +4,7 @@
 """
 import sys
 import json
+from pathlib import Path
 import time
 import os
 import spotipy
@@ -89,15 +90,17 @@ def setup_model(array_of_df):
     y = col_labels
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
 
-    # classifier = RandomForestClassifier(
-    #     n_estimators=20, criterion='gini', random_state=1, max_depth=3)
-    # classifier.fit(X_train, y_train)
-    # y_pred = classifier.predict(X_test)
-    # print(y_pred)
+    classifier = RandomForestClassifier(
+        n_estimators=20, criterion='gini', random_state=1, max_depth=3)
+    classifier.fit(X_train, y_train)
+    y_pred = classifier.predict(X_test)
+    print(y_pred)
 
 
-if __name__ == "__main__":
+try:
     path = sys.argv[1]
-
-    array_df = get_single_playlist(path)
-    setup_model(array_df)
+except IndexError:
+    path = Path(__file__)
+    path = path.parent / 'data' / 'mpd.slice.0-999.json'
+array_df = get_single_playlist(path)
+setup_model(array_df)
