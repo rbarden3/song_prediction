@@ -91,15 +91,10 @@ def get_single_playlist(path):
 
 # * Currently working on this.
 def setup_model(array_of_df):
-    model_df = array_of_df[0]
-    X = array_of_df[0]['x']
-    print('X in setup_model', X)
-    y = array_of_df[0]['y']
-    print('y in setup_model', y)
-
+    dict_x_y = get_x_y(array_of_df)
+    X = dict_x_y['x']
+    y = dict_x_y['y']
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
-    X_train = np.array(X_train).reshape(-1, 1)
-    X_test = np.array(X_test).reshape(-1, 1)
 
     regressor = RandomForestRegressor()
     regressor.fit(X_train, y_train)
@@ -120,7 +115,16 @@ def split_x_y(in_df):
 
     return {'x': x, 'y': y}
 
-# %%
+
+def get_x_y(in_df_arr):
+    out = {'x': [], 'y': []}
+    # print(in_df_arr)
+    for _, val in enumerate(in_df_arr):
+        print("val -> ", val)
+        split_data = split_x_y(val)
+        out['x'].append(split_data['x'])
+        out['y'].append(split_data['y'])
+    return out
 
 
 def split_df_array(arr_df):
@@ -140,5 +144,4 @@ print(path)
 # %%
 array_df = get_single_playlist(path)
 # %%
-feat_arr = split_df_array(array_df)
-setup_model(feat_arr)
+setup_model(array_df)
