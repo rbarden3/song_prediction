@@ -91,15 +91,40 @@ def get_single_playlist(path):
 
 # * Currently working on this.
 def setup_model(array_of_df):
-    dict_x_y = get_x_y(array_of_df)
+     dict_x_y = get_x_y(array_of_df)
     X = dict_x_y['x']
     y = dict_x_y['y']
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
+    print("x_train -> ", X_train)
+    # regressor = RandomForestRegressor()
+    # regressor.fit(X_train, y_train)
+    # Train
+    # Instantiating a XGBoost classifier object
+    X_train = pd.DataFrame(X_train)
+    y_train = pd.DataFrame(y_train)
+    print("x_train", X_train)
+    print("y_train", y_train)
+    xgb_regressor = xgb.XGBRegressor(
+        max_depth=6, learning_rate=0.1, objective='reg:linear', alpha=10, n_estimators=10)
+    xgb_regressor.fit(X_train, y_train)
 
-    regressor = RandomForestRegressor()
-    regressor.fit(X_train, y_train)
-    y_pred = regressor.predict(X_test)
-    print("y_pred -> ", y_pred)
+    # Predict
+    pred_probs = xgb_regressor.predict_proba(X_test)
+    pred_prob_again = xgb_regressor.predict(x_test)
+    rmse = np.sqrt(mean_squared_error(y_test, pred_prob_again))
+
+    print("pred_probs ->", pred_probs)
+
+    # Results
+    print("y_test -> ", y_test)
+    # RMSE
+
+   #  y_pred = regressor.predict(X_test)
+    # print("y_pred -> ", y_pred)
+    # print("y_test -> ", y_test)
+    # print('MSE -> ', mean_squared_error(y_test, y_pred))
+    # print('MAE-> ', mean_absolute_error(y_test, y_pred))
+    # print('RMSE-> ', np.sqrt(mean_squared_error(y_test, y_pred)))
 # %%
 
 
