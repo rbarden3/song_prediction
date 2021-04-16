@@ -67,7 +67,7 @@ def get_col_names(dataframe_df):
     return df_list
 
 
-def get_single_playlist(path):
+def get_playlists_from_file(path):
     # Open path to json file, load json data
     data = json.load(open(path))
     # for i in range(len(data["playlists"])):
@@ -177,7 +177,7 @@ def split_df_array(arr_df):
 path = file_dir / 'data' / 'mpd.slice.0-999.json'
 print(path)
 # %%
-array_df = get_single_playlist(path)
+array_df = get_playlists_from_file(path)
 # %%
 #setup_model(array_df)
 
