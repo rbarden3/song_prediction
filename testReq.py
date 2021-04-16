@@ -1,9 +1,15 @@
+import os
+import json
+from pathlib import Path
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 
 # Give these args to command line
-export SPOTIPY_CLIENT_ID='cf066d284bdd459f9480f4d682555e48'
-export SPOTIPY_CLIENT_SECRET='e7453f0113a042ada35df372168a3481'
+file_dir = Path(__file__).parent
+keys  = json.load(open(file_dir / 'keys.json'))
+# Set environment variables
+os.environ['SPOTIPY_CLIENT_ID'] = keys['SPOTIPY_CLIENT_ID']
+os.environ['SPOTIPY_CLIENT_SECRET'] = keys['SPOTIPY_CLIENT_SECRET']
 
 
 birdy_uri = 'spotify:artist:2WX2uTcsvV5OnS0inACecP'
