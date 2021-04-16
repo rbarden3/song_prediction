@@ -26,13 +26,9 @@ keys  = json.load(open(file_dir / 'keys.json'))
 os.environ['SPOTIPY_CLIENT_ID'] = keys['SPOTIPY_CLIENT_ID']
 os.environ['SPOTIPY_CLIENT_SECRET'] = keys['SPOTIPY_CLIENT_SECRET']
 
-# Spotify creds
-# export SPOTIPY_CLIENT_ID='cf066d284bdd459f9480f4d682555e48'
-# export SPOTIPY_CLIENT_SECRET='e7453f0113a042ada35df372168a3481'
 # Required for Spotipy
 spotify = spotipy.Spotify(
     client_credentials_manager=SpotifyClientCredentials())
-
 
 track_uri_arr = []
 dataframe_storage = []
