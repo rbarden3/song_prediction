@@ -20,9 +20,11 @@ from sklearn import metrics
 from sklearn.multioutput import MultiOutputClassifier
 import xgboost as xgb
 
+file_dir = Path(__file__).parent
+keys  = json.load(open(file_dir / 'keys.json'))
 # Set environment variables
-os.environ['SPOTIPY_CLIENT_ID'] = 'cf066d284bdd459f9480f4d682555e48'
-os.environ['SPOTIPY_CLIENT_SECRET'] = 'e7453f0113a042ada35df372168a3481'
+os.environ['SPOTIPY_CLIENT_ID'] = keys['SPOTIPY_CLIENT_ID']
+os.environ['SPOTIPY_CLIENT_SECRET'] = keys['SPOTIPY_CLIENT_SECRET']
 
 # Spotify creds
 # export SPOTIPY_CLIENT_ID='cf066d284bdd459f9480f4d682555e48'
@@ -176,7 +178,7 @@ def split_df_array(arr_df):
 # try:
 #     path = sys.argv[1]
 # except IndexError:
-path = Path(__file__).parent / 'data' / 'mpd.slice.0-999.json'
+path = file_dir / 'data' / 'mpd.slice.0-999.json'
 print(path)
 # %%
 array_df = get_single_playlist(path)
