@@ -5,14 +5,18 @@
 """
 import sys
 import json
-from pathlib import Path
 import time
 import os
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
+import numpy as np
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_squared_error
+from sklearn.multioutput import MultiOutputClassifier
+import xgboost as xgb
 
 # Set environment variables
 os.environ['SPOTIPY_CLIENT_ID'] = 'cf066d284bdd459f9480f4d682555e48'
@@ -88,10 +92,21 @@ def get_single_playlist(path):
         dataframe_storage.append(new_df)
     return dataframe_storage
 
+# * Currently working on this.
+def setup_rf_model(array_of_df):
+    dict_x_y = get_x_y(array_of_df)
+    X = dict_x_y['x']
+    y = dict_x_y['y']
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
+
+    regressor = RandomForestRegressor()
+    regressor.fit(X_train, y_train)
+    y_pred = regressor.predict(X_test)
+    print("y_pred -> ", y_pred)
 
 # * Currently working on this.
 def setup_model(array_of_df):
-     dict_x_y = get_x_y(array_of_df)
+    dict_x_y = get_x_y(array_of_df)
     X = dict_x_y['x']
     y = dict_x_y['y']
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
@@ -118,16 +133,7 @@ def setup_model(array_of_df):
     # Results
     print("y_test -> ", y_test)
     # RMSE
-
-   #  y_pred = regressor.predict(X_test)
-    # print("y_pred -> ", y_pred)
-    # print("y_test -> ", y_test)
-    # print('MSE -> ', mean_squared_error(y_test, y_pred))
-    # print('MAE-> ', mean_absolute_error(y_test, y_pred))
-    # print('RMSE-> ', np.sqrt(mean_squared_error(y_test, y_pred)))
 # %%
-
-
 def split_x_y(in_df):
     # Col names
     # ['acousticness', 'analysis_url', 'danceability', 'duration_ms', 'energy', 'id', 'instrumentalness',
