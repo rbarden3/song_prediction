@@ -21,7 +21,7 @@ from sklearn.multioutput import MultiOutputClassifier
 import xgboost as xgb
 
 file_dir = Path(__file__).parent
-keys  = json.load(open(file_dir / 'keys.json'))
+keys = json.load(open(file_dir / 'keys.json'))
 # Set environment variables
 os.environ['SPOTIPY_CLIENT_ID'] = keys['SPOTIPY_CLIENT_ID']
 os.environ['SPOTIPY_CLIENT_SECRET'] = keys['SPOTIPY_CLIENT_SECRET']
@@ -91,8 +91,10 @@ def get_playlists_from_file(path):
         # print(new_df.keys())
         dataframe_storage.append(new_df)
     return dataframe_storage
-#%%
+# %%
 # * Currently working on this.
+
+
 def setup_rf_model(model, array_of_df):
     dict_x_y = get_x_y(array_of_df)
     X = dict_x_y['x']
@@ -107,12 +109,14 @@ def setup_rf_model(model, array_of_df):
     return model
 # %%
 # * Currently working on this.
+
+
 def setup_model(array_of_df):
     dict_x_y = get_x_y(array_of_df)
     # X = pd.Series(dict_x_y['x'])
     # y = pd.Series(dict_x_y['y'])
-    X = pd.DataFrame(dict_x_y['x']).iloc[:,:]
-    y = pd.DataFrame(dict_x_y['y']).iloc[:,:]
+    X = pd.DataFrame(dict_x_y['x']).iloc[:, :]
+    y = pd.DataFrame(dict_x_y['y']).iloc[:, :]
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
     print("x_train -> ", X_train)
     # regressor = RandomForestRegressor()
@@ -138,6 +142,8 @@ def setup_model(array_of_df):
     print("y_test -> ", y_test)
     # RMSE
 # %%
+
+
 def split_x_y(in_df):
     # Col names
     # ['acousticness', 'analysis_url', 'danceability', 'duration_ms', 'energy', 'id', 'instrumentalness',
@@ -174,16 +180,30 @@ def split_df_array(arr_df):
 # try:
 #     path = sys.argv[1]
 # except IndexError:
-path = file_dir / 'data' / 'mpd.slice.0-999.json'
-print(path)
-# %%
-array_df = get_playlists_from_file(path)
-# %%
-#setup_model(array_df)
+# from_ = 883000
+# upto = 883999
+for i in range(100):
+   # build_string = "mpd.slice." + str(from_) + "-" + str(upto) + ".json"
+    #path = file_dir / 'data' / build_string
+    #print("path -> ", path)
+    pth_data = file_dir / 'data'
+    filenames = os.listdir(pth_data)
+    for filename in sorted(filenames):
+        if filename.startswith("mpd.slice.") and filename.endswith(".json"):
+            fullpath = os.sep.join((str(pth_data), filename))
+            print("fullpath -> ", fullpath)
+            # %%
+            array_df = get_playlists_from_file(fullpath)
+            # %%
+            # setup_model(array_df)
 
-# %%
-regressor = RandomForestRegressor()
-regressor = setup_rf_model(regressor, array_df)
-regressor = setup_rf_model(regressor, array_df)
+            # %%
+            regressor = RandomForestRegressor()
+            #regressor = setup_rf_model(regressor, array_df)
+            regressor = setup_rf_model(regressor, array_df)
 
-# %%
+            # from_ += 1000
+            # upto += 1000
+            # if from_ > 999000:
+            #     break
+            # %%
