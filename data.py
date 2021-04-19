@@ -10,9 +10,10 @@ def split_x_y(in_df, average=True):
     in_df = in_df.drop(['analysis_url', 'track_href',
                        'uri', 'id', 'type'], axis='columns')
     if average:
-        in_df, last_row = in_df.drop(in_df.tail(1).index), in_df.tail(1)
-        x.append(in_df.mean().tolist())
-        y.append(last_row.values.tolist()[0])
+        while in_df.shape[0] > 1:
+            in_df, last_row = in_df.drop(in_df.tail(1).index), in_df.tail(1)
+            x.append(in_df.mean().tolist())
+            y.append(last_row.values.tolist()[0])
     else:
         while in_df.shape[0] > 1:
             in_df, last_row = in_df.drop(in_df.tail(1).index), in_df.tail(1)
