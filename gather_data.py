@@ -3,6 +3,10 @@
     usage:
         python print.py path-mpd/
 """
+# File Imports
+from sorter import alphanum_key
+
+# Package Imports
 import sys
 import json
 import time
@@ -15,7 +19,7 @@ from pathlib import Path
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 # from sklearn.metrics import mean_absolute_error
-# from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error
 from sklearn import metrics
 from sklearn.multioutput import MultiOutputClassifier
 import xgboost as xgb
@@ -182,28 +186,35 @@ def split_df_array(arr_df):
 # except IndexError:
 # from_ = 883000
 # upto = 883999
-for i in range(100):
+
+# for i in range(100):
    # build_string = "mpd.slice." + str(from_) + "-" + str(upto) + ".json"
     #path = file_dir / 'data' / build_string
     #print("path -> ", path)
-    pth_data = file_dir / 'data'
-    filenames = os.listdir(pth_data)
-    for filename in sorted(filenames):
-        if filename.startswith("mpd.slice.") and filename.endswith(".json"):
-            fullpath = os.sep.join((str(pth_data), filename))
-            print("fullpath -> ", fullpath)
-            # %%
-            array_df = get_playlists_from_file(fullpath)
-            # %%
-            # setup_model(array_df)
+data_dir = file_dir / 'data'
+for file_path in sorted(data_dir.glob('mpd.slice.*.json'), key=alphanum_key):
+    print("fullpath -> ", file_path)
+    # %%
+    array_df = get_playlists_from_file(file_path)
+    # %%
+    # setup_model(array_df)
 
-            # %%
-            regressor = RandomForestRegressor()
-            #regressor = setup_rf_model(regressor, array_df)
-            regressor = setup_rf_model(regressor, array_df)
+    # %%
+    regressor = RandomForestRegressor()
+    #regressor = setup_rf_model(regressor, array_df)
+    regressor = setup_rf_model(regressor, array_df)
 
-            # from_ += 1000
-            # upto += 1000
-            # if from_ > 999000:
-            #     break
-            # %%
+    # from_ += 1000
+    # upto += 1000
+    # if from_ > 999000:
+    #     break
+# %%
+data_dir = file_dir / 'data'
+filenames = os.listdir(data_dir)
+# for filename in sorted(filenames):
+#     print(filename) 
+
+    # if filename.startswith("mpd.slice.") and filename.endswith(".json"):
+# for filename in sorted(data_dir.glob('mpd.slice.*.json'), key=alphanum_key):
+# files = [ filename for filename in data_dir.glob('mpd.slice.*.json') ]
+# print(files)
