@@ -30,6 +30,7 @@ spotify = spotify_conn(file_dir / 'keys.json')
     #path = file_dir / 'data' / build_string
     #print("path -> ", path)
 data_dir = file_dir / 'data'
+regressor = RandomForestRegressor()
 for file_path in sorted(data_dir.glob('mpd.slice.*.json'), key=alphanum_key):
     print("fullpath -> ", file_path)
     # %%
@@ -38,7 +39,6 @@ for file_path in sorted(data_dir.glob('mpd.slice.*.json'), key=alphanum_key):
     # setup_model(array_df)
 
     # %%
-    regressor = RandomForestRegressor()
     regressor = random_forest(regressor, array_df)
 
     # from_ += 1000
