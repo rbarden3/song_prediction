@@ -2,3 +2,4 @@ data/
 .cache
 keys.json
 .cache
+.DS_Store
