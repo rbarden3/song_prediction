@@ -30,7 +30,7 @@ while(len(track_uri_dict) > 0):
     track_uris = request_tracks.keys()
     features_res = get_features(conn, track_uris)
     for ind, val in enumerate(features_res):
-        request_tracks[val['uri']] = tuple(request_tracks[val['uri']] + list(val.values()))
+        request_tracks[val['uri']] = request_tracks[val['uri']] + list(val.values())
     file_tracks.update(request_tracks)
 field_names += val.keys()
 
