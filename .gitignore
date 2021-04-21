@@ -1,5 +1,5 @@
 data/
-.cache
+*.cache
 keys.json
 .cache
 .DS_Store
