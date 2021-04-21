@@ -18,7 +18,7 @@ path = r'c:\Users\Raleigh\Desktop\Work\song_prediction\data\mpd.slice.0-999.json
 # %%
 data = json.load(open(path))
 field_names = ["artist_name", "track_name"]
-file_tracks = []
+file_tracks = dict()
 # track_uri_arr = []
 track_uri_dict = dict()
 for ind, playlist in enumerate(data['playlists']):
@@ -31,19 +31,20 @@ for ind, playlist in enumerate(data['playlists']):
 # print("Soung Count No Dupes: " + str(len(track_uri_arr)))
 # print("before loop")
 counter = 0
-while(len(track_uri_arr) > 0):
+while(len(track_uri_dict) > 0):
     counter +=1
     # print("iter:" + str(counter))
-    track_uri_arr, request_tracks = cut_songs_modified(track_uri_arr)
-    track_uris = [track[2] for track in request_tracks]
+    track_uri_dict, request_tracks = cut_songs_dict(track_uri_dict)
+    track_uris = request_tracks.keys()
     # print(track_uris)
     features_res = get_features(conn, track_uris)
     for ind, val in enumerate(features_res):
-        del request_tracks[ind][2]
-        request_tracks[ind] += val.values()
-        request_tracks[ind] = tuple(request_tracks[ind])
-    file_tracks += request_tracks
+        # del request_tracks[ind][2]
+        request_tracks[val['uri']] = tuple(request_tracks[val['uri']] + list(val.values()))
+        # request_tracks[val['uri']] = tuple(request_tracks[val['uri']])
+    # file_tracks += request_tracks
+    file_tracks.update(request_tracks)
 field_names += val.keys()
-file_tracks = set(file_tracks)
+# file_tracks = set(file_tracks.values())
 
-df = pd.DataFrame(data=file_tracks, columns=field_names)
+df = pd.DataFrame.from_dict(data=file_tracks, orient='index', columns=field_names)
