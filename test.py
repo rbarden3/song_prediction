@@ -14,7 +14,7 @@ def cut_songs_dict(tracks: dict):
 file_dir = Path(__file__).parent
 data_dir = file_dir / 'data'
 conn = spotify_conn(file_dir / 'keys.json')
-path = r'c:\Users\Raleigh\Desktop\Work\song_prediction\data\mpd.slice.0-999.json'
+path = data_dir / 'mpd.slice.0-999.json'
 # %%
 data = json.load(open(path))
 field_names = ["artist_name", "track_name"]
