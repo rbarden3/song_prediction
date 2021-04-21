@@ -32,6 +32,12 @@ def cut_songs(tracks_array):
     else:
         return tracks_array
 
+def cut_songs_modified(tracks_array):
+    req_tracks = []
+    while len(tracks_array) > 0 and len(req_tracks) < 100:
+        req_tracks.append(tracks_array.pop())
+    return (tracks_array, req_tracks)
+
 
 def get_playlists_from_file(path, conn):
     # Open path to json file, load json data
