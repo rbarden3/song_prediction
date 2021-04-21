@@ -4,6 +4,7 @@ from pathlib import Path
 import pandas as pd
 import json
 import time
+import requests 
 from sorter import alphanum_key
 
 #%%
@@ -23,7 +24,10 @@ conn = spotify_conn(file_dir / 'keys.json')
 all_tracks = dict()
 time_start = time.time()
 file_times = dict()
+# file_path = data_dir / 'mpd.slice.21000-21999.json'
 for file_path in sorted(data_dir.glob('mpd.slice.*.json'), key=alphanum_key):
+# if True:
+    file_start = time.time()
     print("file path -> ", file_path)
     data = json.load(open(file_path))
     files_tracks = dict()
@@ -33,14 +37,32 @@ for file_path in sorted(data_dir.glob('mpd.slice.*.json'), key=alphanum_key):
     while(len(files_tracks) > 0):
         files_tracks, request_tracks = cut_songs_dict(files_tracks)
         track_uris = request_tracks.keys()
-        features_res = get_features(conn, track_uris)
+        count = 0
+        while count < 10:
+            try:
+                features_res = get_features(conn, track_uris)
+                count = 11
+            except requests.exceptions.ReadTimeout as e:
+                print(e)
+                count +=1
+                if count < 10:
+                    print("Get Failed w/ ReadTimeout error: ", e)
+                    print("Trying Again: Attempt", count+1, "out of 10")
+                else:
+                    print("Get Failed after 10 attempts")
+                    raise(e)
         for ind, val in enumerate(features_res):
-            request_tracks[val['uri']] = request_tracks[val['uri']] + list(val.values())
+            try:
+                request_tracks[val['uri']] = request_tracks[val['uri']] + list(val.values())
+            except TypeError as e:
+                print("Error Assigning URI, Song Removed from Sporify:", e)
         all_tracks.update(request_tracks)
-    file_times[file_path] = time.time() - time_start
+    file_end = time.time()
+    file_times[file_path] = file_end - file_start
+
     print("file completed in: " + str(file_times[file_path]))
 field_names = ["artist_name", "track_name"] + list(val.keys())
 df = pd.DataFrame.from_dict(data=all_tracks, orient='index', columns=field_names)
-print("results compiled in: " + str(sum(file_times.values())))
+print("results compiled in: " + str(time.time()-time_start))
 print("Average Time: " + str(sum(file_times.values())/len(file_times)))
 df.to_pickle('tracks_df.pkl')
