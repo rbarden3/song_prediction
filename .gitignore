@@ -5,3 +5,4 @@ pkl_backups/
 keys.json
 .cache
 .DS_Store
+*.pkl
