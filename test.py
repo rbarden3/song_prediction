@@ -5,6 +5,7 @@ import pandas as pd
 import pickle
 import json
 from tqdm import tqdm
+import spotipy
 import time
 import requests 
 from sorter import alphanum_key
@@ -69,6 +70,14 @@ while(len(all_tracks_noFeatures) > 0):
             else:
                 # print("Get Failed after 10 attempts")
                 raise(e)
+        except  spotipy.SpotifyException as e:
+            # print(e)
+            count +=1
+            if count < 20:
+                time.sleep(15)
+                pass
+            else:
+                raise(e)
     for ind, val in enumerate(features_res):
         try:
             request_tracks[val['uri']] = request_tracks[val['uri']] + list(val.values())
@@ -87,3 +96,5 @@ df = pd.DataFrame.from_dict(data=all_tracks, orient='index', columns=field_names
 # print("results compiled in: " + str(time.time()-time_start))
 # print("Average Time: " + str(sum(request_times)/len(request_times)))
 df.to_pickle('tracks_df.pkl')
+#%%
+# df2 = pd.read_pickle('tracks_df.pkl')
