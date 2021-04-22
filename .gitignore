@@ -8,3 +8,4 @@ keys.json
 *.pkl
 *pyc
 .DS_Store
+*.csv
