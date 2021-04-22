@@ -22,7 +22,7 @@ spotify = spotify_conn(file_dir / 'keys.json')
 # %%
 regressor = RandomForestRegressor(warm_start=True)
 for file_path in sorted(data_dir.glob('mpd.slice.*.json'), key=alphanum_key):
-    print("fullpath -> ", file_path)
+    # print("fullpath -> ", file_path)
     # %%
     array_df = get_playlists_from_file(file_path, spotify)
     
