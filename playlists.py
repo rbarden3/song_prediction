@@ -8,6 +8,8 @@ from pathlib import Path
 from sorter import alphanum_key
 
 # Required for Spotipy
+
+
 def spotify_conn(keys_path):
     keys = json.load(open(keys_path))
     # Set environment variables
@@ -18,9 +20,14 @@ def spotify_conn(keys_path):
     return spotify
 
 # Given an array of >= 100 tracks, returns the audio features for each track
+
+
 def get_features(conn, tracks_array):
     return conn.audio_features(tracks_array)
 
+
+def get_track_info(conn, track_id):
+    return conn.track(track_id)
 # Get 0 index playlist
 # Like process_playlists, but just processes the first [0] playlist
 
@@ -34,6 +41,9 @@ def cut_songs(tracks_array):
         return tracks_array
     else:
         return tracks_array
+
+# we can probably delete this, it's not used
+
 
 def cut_songs_modified(tracks_array):
     req_tracks = []
@@ -66,23 +76,61 @@ def get_playlists_from_file(path, conn):
         dataframe_storage.append(new_df)
     return dataframe_storage
 
+
+def cut_songs_dict(tracks: dict):
+    request_tracks = dict()
+    while len(tracks) > 0 and len(request_tracks) < 100:
+        uri, features = tracks.popitem()
+        request_tracks[uri] = features
+    return (tracks, request_tracks)
+
+
+def audio_features_df_knn(path, conn):
+    data = json.load(open(path))
+    field_names = ["artist_name", "track_name"]
+    file_tracks = dict()
+    track_uri_dict = dict()
+    for ind, playlist in enumerate(data['playlists']):
+        for track in playlist["tracks"]:
+            track_uri_dict[track["track_uri"]] = [
+                track["artist_name"], track["track_name"]]
+    counter = 0
+    while(len(track_uri_dict) > 0):
+        counter += 1
+        track_uri_dict, request_tracks = cut_songs_dict(track_uri_dict)
+        track_uris = request_tracks.keys()
+        features_res = get_features(conn, track_uris)
+        for ind, val in enumerate(features_res):
+            request_tracks[val['uri']] = request_tracks[val['uri']
+                                                        ] + list(val.values())
+        file_tracks.update(request_tracks)
+    field_names += val.keys()
+
+    df = pd.DataFrame.from_dict(
+        data=file_tracks, orient='index', columns=field_names)
+    df = df.drop(['analysis_url', 'track_href',
+                  'uri', 'id', 'type'], axis='columns')
+    print(df)
+    return df
+
+
 def get_all_tracks(data_dir):
     all_tracks = dict()
     time_start = time.time()
     file_times = dict()
     # file_path = data_dir / 'mpd.slice.21000-21999.json'
     for file_path in sorted(data_dir.glob('mpd.slice.*.json'), key=alphanum_key):
-    # if True:
+        # if True:
         file_start = time.time()
         print("file path -> ", file_path)
         data = json.load(open(file_path))
         files_tracks = dict()
         for ind, playlist in enumerate(data['playlists']):
             for track in playlist["tracks"]:
-                files_tracks[track["track_uri"]] = [track["artist_name"], track["track_name"]]
+                files_tracks[track["track_uri"]] = [
+                    track["artist_name"], track["track_name"]]
         all_tracks.update(files_tracks)
 
-        
         file_end = time.time()
         file_times[file_path] = file_end - file_start
 
