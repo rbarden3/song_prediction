@@ -63,7 +63,7 @@ def knn(df):
     # Predict
     y_pred = classifier.predict(X_test)
     print("y_pred -> ", y_pred)
-    Evaluate
+    # Evaluate
     cm = confusion_matrix(y_test, y_pred)
     print("confusion matrix -> ", cm)
     print("f1 ->", f1_score(y_test, y_pred, average='micro'))
