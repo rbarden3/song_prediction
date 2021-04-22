@@ -3,6 +3,9 @@ import pandas as pd
 import json
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
+import time
+from pathlib import Path
+from sorter import alphanum_key
 
 # Required for Spotipy
 def spotify_conn(keys_path):
@@ -62,3 +65,28 @@ def get_playlists_from_file(path, conn):
         # print(new_df.keys())
         dataframe_storage.append(new_df)
     return dataframe_storage
+
+def get_all_tracks(data_dir):
+    all_tracks = dict()
+    time_start = time.time()
+    file_times = dict()
+    # file_path = data_dir / 'mpd.slice.21000-21999.json'
+    for file_path in sorted(data_dir.glob('mpd.slice.*.json'), key=alphanum_key):
+    # if True:
+        file_start = time.time()
+        print("file path -> ", file_path)
+        data = json.load(open(file_path))
+        files_tracks = dict()
+        for ind, playlist in enumerate(data['playlists']):
+            for track in playlist["tracks"]:
+                files_tracks[track["track_uri"]] = [track["artist_name"], track["track_name"]]
+        all_tracks.update(files_tracks)
+
+        
+        file_end = time.time()
+        file_times[file_path] = file_end - file_start
+
+        print("file completed in: " + str(file_times[file_path]))
+    print("results compiled in: " + str(time.time()-time_start))
+    print("Average Time: " + str(sum(file_times.values())/len(file_times)))
+    return all_tracks
