@@ -6,3 +6,5 @@ keys.json
 .cache
 .DS_Store
 *.pkl
+*pyc
+.DS_Store
