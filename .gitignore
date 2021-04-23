@@ -3,3 +3,4 @@ data/
 keys.json
 .cache
 .DS_Store
+.vscode/settings.json
