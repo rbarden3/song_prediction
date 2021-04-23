@@ -1,6 +1,12 @@
 data/
-.cache
+__pycache__/
+pkl_backups/
+*.cache
 keys.json
 .cache
 .DS_Store
 .vscode/settings.json
+*.pkl
+*pyc
+.DS_Store
+*.csv

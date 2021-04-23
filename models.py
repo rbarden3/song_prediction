@@ -14,6 +14,12 @@ from tensorflow.keras.layers import Dense, Input
 
 import pandas as pd
 import numpy as np
+import math
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import f1_score
+from sklearn.metrics import accuracy_score
+from sklearn.neighbors import KNeighborsClassifier
 
 # I needed this to allow the use of my GPU
 physical_devices = tf.config.list_physical_devices('GPU')
@@ -54,6 +60,46 @@ def sequentialModel(model, array_of_df):
     mean_error = mean_absolute_error(y_test, y_pred)
     print("\nmean_error -> ", mean_error)
     return model
+# Find what n should be
+
+
+def get_nth(y_arr):
+    if round(math.sqrt(len(y_arr))) % 2 == 0:
+        return round(math.sqrt(len(y_arr))) - 1
+    else:
+        return round(math.sqrt(len(y_arr)))
+
+
+def knn(df):
+    print(df.columns)
+    # split
+    X = df.iloc[:, 2:13]
+    y = list(df.T.to_dict('list').keys())
+    # print("y", y)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+    # print('Xtrain -> ', X_train)
+    # print('X_test -> ', X_test)
+    # print('y_train -> ', y_train)
+    # print('y_test -> ', y_test)
+    # Scaling features all features between -1 and 1
+    # sc_X = StandardScaler()
+    # X_train = sc_X.fit_transform(X_train)
+    # X_test = sc_X.transform(X_test)
+
+    # Define and fit model
+    nth = get_nth(y_test)
+    classifier = KNeighborsClassifier(n_neighbors=nth, p=2, metric='euclidean')
+    classifier.fit(X_train, y_train)
+
+    # Predict
+    y_pred = classifier.predict(X_test)
+    print("y_pred -> ", y_pred)
+    # Evaluate
+    cm = confusion_matrix(y_test, y_pred)
+    print("confusion matrix -> ", cm)
+    print("f1 ->", f1_score(y_test, y_pred, average='micro'))
+    print("accuracy -> ", accuracy_score(y_test, y_pred))
+    return y_pred
 
 
 def xgboost(array_of_df):

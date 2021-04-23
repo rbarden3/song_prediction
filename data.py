@@ -5,8 +5,8 @@ def split_x_y(in_df, average=True):
     # Col names
     # ['acousticness', 'analysis_url', 'danceability', 'duration_ms', 'energy', 'id', 'instrumentalness',
     # 'key', 'liveness', 'loudness', 'mode', 'speechiness', 'tempo', 'time_signature', 'track_href', 'type', 'uri', 'valence']
-    x= []
-    y =[]
+    x = []
+    y = []
     in_df = in_df.drop(['analysis_url', 'track_href',
                        'uri', 'id', 'type'], axis='columns')
     if average:
