@@ -10,7 +10,9 @@ from sklearn.model_selection import train_test_split
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Input
+from tensorflow.keras.layers import Dense, Input, Dropout, Activation
+from tensorflow.keras.layers import Embedding
+from tensorflow.keras.layers import LSTM
 
 import pandas as pd
 import numpy as np
@@ -46,21 +48,28 @@ def sequentialModel(model, array_of_df):
     y = dict_x_y['y']
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
     input_dim = len(X_train[0])
-
+    # model.add(Dense(units=13, activation='relu', input_dim=input_dim))
+    # model.add(Dense(units=6, activation='relu'))
+    # model.add(Dense(units=3, activation='relu'))
+    # model.add(Dense(units=1, activation='sigmoid'))
+    # Maxfeatures needs to be the max number of songs in any playlist
+    # https://faroit.com/keras-docs/1.0.1/getting-started/sequential-model-guide/
+    # https://keras.io/api/layers/core_layers/embedding/
+    model.add(Embedding(376, 256, input_length=input_dim))
+    model.add(LSTM(output_dim=128, activation='sigmoid',
+              inner_activation='hard_sigmoid'))
+    model.add(Dropout(0.5))
     model.add(Dense(units=13, activation='relu', input_dim=input_dim))
-    model.add(Dense(units=6, activation='relu'))
-    model.add(Dense(units=3, activation='relu'))
-    model.add(Dense(units=1, activation='sigmoid'))
     model.compile(loss="mse", optimizer='adam', metrics=['accuracy'])
 
     # , epochs=num_epochs, batch_size=16, verbose=0)
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
-    print("y_pred -> ", y_pred)
-    mean_error = mean_absolute_error(y_test, y_pred)
-    print("\nmean_error -> ", mean_error)
+    #print("y_pred -> ", y_pred)
+    mean_error = tf.keras.losses.mean_absolute_error(y_test, y_pred)
+
+    #print("\nmean_error -> ", mean_error)
     return model
-# Find what n should be
 
 
 def get_nth(y_arr):

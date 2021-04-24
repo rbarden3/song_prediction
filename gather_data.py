@@ -36,6 +36,14 @@ spotify = spotify_conn(file_dir / 'keys.json')
 
 #     regressor = random_forest(regressor, array_df)
 
+# Make a def that finds the max
+
+
+def get_longest_playlist(data_dir=data_dir):
+    longest_playlist_len = 0
+    for file_path in sorted(data_dir.glob('mpd.slice.*.json'), key=alphanum_key):
+        array_df = get_play
+
 
 sequentialRegressor = tf.keras.Sequential()
 regressor = RandomForestRegressor()
@@ -57,10 +65,10 @@ for file_path in sorted(data_dir.glob('mpd.slice.*.json'), key=alphanum_key):
     track_pred = knn(af_df)
     # print('predicted track -> ', get_track_info(spotify, track_pred[0]))
 
-    track_name = get_track_info(spotify, track_pred[0])
-    print("PREDICTED TRACK NAME -> ", track_name["name"])
-    track_artist = get_track_info(spotify, track_pred[0])
-    print("PREDICTED ARTIST NAME -> ", track_artist["artists"][0]["name"])
+    # track_name = get_track_info(spotify, track_pred[0])
+    # print("PREDICTED TRACK NAME -> ", track_name["name"])
+    # track_artist = get_track_info(spotify, track_pred[0])
+    # print("PREDICTED ARTIST NAME -> ", track_artist["artists"][0]["name"])
 # %%
 data_dir = file_dir / 'data'
 filenames = os.listdir(data_dir)
