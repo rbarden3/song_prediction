@@ -69,15 +69,13 @@ def get_playlists_from_file(path, conn):
         # print("Num of Albums -> ", first_playlist["num_albums"])
         # print("Num of Tracks -> ", first_playlist["num_tracks"])
         # print("Tracks -> ")
+        features_res = []
         for track in playlist["tracks"]:
             track_uri_arr.append(track["track_uri"])
-
-        track_uri_arr = cut_songs_modified(track_uri_arr)
-        features_res = get_features(conn, track_uri_arr)
-        # time.sleep(1.0)
-        new_df = pd.DataFrame(features_res)
-        # print(new_df.keys())
-        dataframe_storage.append(new_df)
+        while len(track_uri_arr) >0:
+            track_uri_arr, req_tracks= cut_songs_modified(track_uri_arr)
+            features_res += get_features(conn, req_tracks)
+        dataframe_storage.append(pd.DataFrame(features_res))
     return dataframe_storage
 
 def get_playlists_from_file_NoFeats(path):
