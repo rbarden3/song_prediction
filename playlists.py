@@ -1,3 +1,4 @@
+#%%
 import os
 import pandas as pd
 import json
@@ -46,9 +47,12 @@ def cut_songs(tracks_array):
 
 
 def cut_songs_modified(tracks_array):
-    req_tracks = []
-    while len(tracks_array) > 0 and len(req_tracks) < 100:
-        req_tracks.append(tracks_array.pop())
+    if len(tracks_array) > 100:
+        items = 100
+    else:
+        items = len(tracks_array)
+    req_tracks = tracks_array[:items]
+    del tracks_array[:items]
     return (tracks_array, req_tracks)
 
 
@@ -68,7 +72,7 @@ def get_playlists_from_file(path, conn):
         for track in playlist["tracks"]:
             track_uri_arr.append(track["track_uri"])
 
-        track_uri_arr = cut_songs(track_uri_arr)
+        track_uri_arr = cut_songs_modified(track_uri_arr)
         features_res = get_features(conn, track_uri_arr)
         # time.sleep(1.0)
         new_df = pd.DataFrame(features_res)
@@ -76,6 +80,13 @@ def get_playlists_from_file(path, conn):
         dataframe_storage.append(new_df)
     return dataframe_storage
 
+def get_playlists_from_file_NoFeats(path):
+    # Open path to json file, load json data
+    data = json.load(open(path))
+    all_playlists = []
+    for playlist in data['playlists']:
+        all_playlists.append(playlist["tracks"])
+    return all_playlists
 
 def cut_songs_dict(tracks: dict):
     request_tracks = dict()
@@ -138,3 +149,4 @@ def get_all_tracks(data_dir):
     print("results compiled in: " + str(time.time()-time_start))
     print("Average Time: " + str(sum(file_times.values())/len(file_times)))
     return all_tracks
+
