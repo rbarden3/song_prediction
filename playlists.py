@@ -7,6 +7,7 @@ from spotipy.oauth2 import SpotifyClientCredentials
 import time
 from pathlib import Path
 from sorter import alphanum_key
+import requests
 
 # Required for Spotipy
 
@@ -24,7 +25,30 @@ def spotify_conn(keys_path):
 
 
 def get_features(conn, tracks_array):
-    return conn.audio_features(tracks_array)
+    count = 0
+    while count < 10:
+        try:
+            features_res = conn.audio_features(tracks_array)
+            count = 11
+        except requests.exceptions.ReadTimeout as e:
+            # print(e)
+            count += 1
+            if count < 10:
+                # print("Get Failed w/ ReadTimeout error: ", e)
+                # print("Trying Again: Attempt", count+1, "out of 10")
+                pass
+            else:
+                # print("Get Failed after 10 attempts")
+                raise(e)
+        except  spotipy.SpotifyException as e:
+            # print(e)
+            count +=1
+            if count < 20:
+                time.sleep(15)
+                pass
+            else:
+                raise(e)
+    return features_res
 
 
 def get_track_info(conn, track_id):
