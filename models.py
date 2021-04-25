@@ -129,9 +129,10 @@ def get_nth(y_arr):
 
 
 def knn(df):
+    df.dropna(inplace=True)
     print(df.columns)
     # split
-    X = df.iloc[:, 2:13]
+    X = list(df.T.to_dict('list').values())
     y = list(df.T.to_dict('list').keys())
     # print("y", y)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
