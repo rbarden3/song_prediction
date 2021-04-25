@@ -10,3 +10,6 @@ keys.json
 *pyc
 .DS_Store
 *.csv
+saved_model/saved_model.pb
+saved_model/variables/variables.data-00000-of-00001
+saved_model/variables/variables.index
