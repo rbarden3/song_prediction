@@ -1,15 +1,19 @@
 def get_col_names(dataframe_df):
     return list(dataframe_df.columns)
 
+
 def split_x_y(in_df, average=True, iterate_arrays=True):
     # Col names
     # ['acousticness', 'analysis_url', 'danceability', 'duration_ms', 'energy', 'id', 'instrumentalness',
     # 'key', 'liveness', 'loudness', 'mode', 'speechiness', 'tempo', 'time_signature', 'track_href', 'type', 'uri', 'valence']
     x = []
     y = []
-    in_df = in_df.drop(['analysis_url', 'track_href',
-                       'uri', 'id', 'type'], axis='columns')
-    
+    try:
+        in_df = in_df.drop(['analysis_url', 'track_href',
+                            'uri', 'id', 'type'], axis='columns')
+    except KeyError:
+        pass
+
     if iterate_arrays:
         while in_df.shape[0] > 1:
             in_df, last_row = in_df.drop(in_df.tail(1).index), in_df.tail(1)
@@ -25,8 +29,6 @@ def split_x_y(in_df, average=True, iterate_arrays=True):
             x.append(in_df.mean().tolist())
         else:
             x.append(in_df.values.tolist())
-                
-                
 
     return {'x': x, 'y': y}
 
