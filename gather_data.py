@@ -3,26 +3,28 @@
     usage:
         python print.py path-mpd/
 """
-# File Imports
-from sorter import alphanum_key
-from models import random_forest, knn, sequential_model, build_sequential_model
-from playlists import spotify_conn, get_track_info, audio_features_df_knn
-# from test import audio_features_df_knn
+from sklearn.neighbors import KNeighborsClassifier
+from tensorflow.keras.models import Sequential
+from tensorflow import keras
+import tensorflow as tf
+from sklearn.ensemble import RandomForestRegressor
+import pandas as pd
+import pickle
+from pathlib import Path
+import os
+import json
+import sys
 from get_longest_playlest import get_longest_playlest
+from playlists import spotify_conn, get_track_info, audio_features_df_knn
+from models import random_forest, knn, sequential_model, build_sequential_model
+from sorter import alphanum_key
+
+
+# File Imports
+# from test import audio_features_df_knn
 
 # Package Imports
-import sys
-import json
-import os
-from pathlib import Path
-import pickle
-import pandas as pd
-from sklearn.ensemble import RandomForestRegressor
-import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras.models import Sequential
 
-from sklearn.neighbors import KNeighborsClassifier
 
 with open('tracks_df.pkl', 'rb') as handle:
     tracks_df = pickle.load(handle)
@@ -39,9 +41,10 @@ def get_playlists_from_file(path, conn):
         # reset track_uri_arr
         tracks = []
         # print("index is ", ind)
-        for track in playlist["tracks"]:
-            tracks.append(tracks_df.loc[track["track_uri"]].tolist())
-        dataframe_storage.append(pd.DataFrame(tracks))
+        if playlist["tracks"]:
+            for track in playlist["tracks"]:
+                tracks.append(tracks_df.loc[track["track_uri"]].tolist())
+            dataframe_storage.append(pd.DataFrame(tracks))
     return dataframe_storage
 
 
@@ -66,19 +69,19 @@ knn_classifier = KNeighborsClassifier()
 # with open('mpd.slice.0-999.pkl', 'rb') as handle:
 #         array_df = pickle.load(handle)
 counter = 0
+array_df = []
 for file_path in sorted(data_dir.glob('mpd.slice.*.json'), key=alphanum_key):
     # if True:
-    if counter > 10:
+    if counter > 20:
         break
 
     # file_path = data_dir / 'mpd.slice.0-999.json'
     # print("fullpath -> ", file_path)
-    # %%
-    array_df = get_playlists_from_file(file_path, spotify)
+    array_df += get_playlists_from_file(file_path, spotify)
 
     # setup_model(array_df)
 
-    sequential_regressor = sequential_model(sequential_regressor, array_df)
+    # sequential_regressor = sequential_model(sequential_regressor, array_df)
     # array_df = get_playlists_from_file(file_path, spotify)
 
     # # setup_model(array_df)
@@ -93,6 +96,7 @@ for file_path in sorted(data_dir.glob('mpd.slice.*.json'), key=alphanum_key):
     # track_artist = get_track_info(spotify, track_pred[0])
     # print("PREDICTED ARTIST NAME -> ", track_artist["artists"][0]["name"])
     counter += 1
+sequential_regressor = sequential_model(sequential_regressor, array_df)
 # %%
 data_dir = file_dir / 'data'
 filenames = os.listdir(data_dir)

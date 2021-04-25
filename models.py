@@ -53,6 +53,20 @@ def build_sequential_model(input_dim=376):
                   'accuracy', tf.keras.metrics.MeanSquaredError(), ])
     return model
 
+# def build_sequential_model(input_dim=376):
+#     model = tf.keras.Sequential()
+#     model.add(LSTM(units=128, input_shape=(
+#         input_dim, 13), activation='relu', return_sequences=True))
+#     # model.add(Dropout(0.5))
+#     model.add(Dropout(0.3))
+#     model.add(LSTM(64))
+#     model.add(Dense(64))
+#     model.add(Dropout(0.3))
+#     model.add(Dense(units=13, activation='relu', input_dim=input_dim))
+#     model.compile(loss="mse", optimizer='adam', metrics=[
+#                   'accuracy', tf.keras.metrics.MeanSquaredError(), ])
+#     return model
+
 
 def sequential_model(model, array_of_df, input_dim=376):
     dict_x_y = get_x_y(array_of_df, average=False, iterate_arrays=False)
