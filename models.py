@@ -9,8 +9,9 @@ from sklearn.model_selection import train_test_split
 
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Input, Dropout, Activation
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.models import Sequential, save_model, load_model
+from tensorflow.keras.layers import Dense, Input, Dropout, Activation, Lambda
 from tensorflow.keras.layers import Embedding
 from tensorflow.keras.layers import LSTM
 
@@ -42,31 +43,65 @@ def random_forest(model, array_of_df):
     return model
 
 
-def sequentialModel(model, array_of_df):
-    dict_x_y = get_x_y(array_of_df)
-    X = dict_x_y['x']
-    y = dict_x_y['y']
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
-    input_dim = len(X_train[0])
-    # model.add(Dense(units=13, activation='relu', input_dim=input_dim))
-    # model.add(Dense(units=6, activation='relu'))
-    # model.add(Dense(units=3, activation='relu'))
-    # model.add(Dense(units=1, activation='sigmoid'))
-    # Maxfeatures needs to be the max number of songs in any playlist
-    # https://faroit.com/keras-docs/1.0.1/getting-started/sequential-model-guide/
-    # https://keras.io/api/layers/core_layers/embedding/
-    model.add(Embedding(376, 256, input_length=input_dim))
-    model.add(LSTM(output_dim=128, activation='sigmoid',
-              inner_activation='hard_sigmoid'))
+def build_sequential_model(input_dim=376):
+    model = tf.keras.Sequential()
+    model.add(LSTM(units=128, input_shape=(
+        input_dim, 13), activation='relu'))
     model.add(Dropout(0.5))
     model.add(Dense(units=13, activation='relu', input_dim=input_dim))
-    model.compile(loss="mse", optimizer='adam', metrics=['accuracy'])
+    model.compile(loss="mse", optimizer='adam', metrics=[
+                  'accuracy', tf.keras.metrics.MeanSquaredError(), ])
+    return model
 
-    # , epochs=num_epochs, batch_size=16, verbose=0)
+
+def sequential_model(model, array_of_df, input_dim=376):
+    dict_x_y = get_x_y(array_of_df, average=False, iterate_arrays=False)
+    X = dict_x_y['x']
+    y = dict_x_y['y']
+
+    # for i, playlist in enumerate(X):
+    #     for ind, track in enumerate(playlist):
+    #         playlist[ind] = np.asarray(track, dtype=np.float32)
+    #     X[i] = np.array(playlist)
+
+    # for ind, song in enumerate(y):
+    #     y[ind] = np.asarray(song, dtype=np.float32)
+
+    # X = np.expand_dims(padded, axis=0)
+    padded = pad_sequences(X, input_dim)
+    X = padded
+    # print("Shape X", X.shape)
+    y = np.array(y)
+    # print("Shape y", y.shape)
+
+    # print("X", X, "\nY:", y)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
+    # input_dim = len(X_train[0])
+
+    # model.add(Embedding(376, 256, input_length=input_dim))
+
     model.fit(X_train, y_train)
-    y_pred = model.predict(X_test)
+    score = model.evaluate(X_test, y_test)
+    print(f'Loss: {score[0]} / Accuracy: {score[1]} / MSE: {score[2]}')
+
+    # # Save the model
+    # filepath = './saved_model'
+    # save_model(model, filepath)
+    # # Load the model
+    # model = load_model(filepath, compile=True)
+
+    # use_samples = [5, 38, 350]
+    # sample_predict = []
+    # for sample in use_samples:
+    #     sample_predict.append(X_train[sample])
+
+    # sample_predict = np.array(sample_predict)
+    # predictions = model.predict(sample_predict)
+    # print("Predict:", predictions)
+
+    # y_pred = model.predict(X_test)
     #print("y_pred -> ", y_pred)
-    mean_error = tf.keras.losses.mean_absolute_error(y_test, y_pred)
+    # mean_error = tf.keras.losses.mean_absolute_error(y_test, y_pred)
 
     #print("\nmean_error -> ", mean_error)
     return model
