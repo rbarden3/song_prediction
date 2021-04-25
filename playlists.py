@@ -1,4 +1,4 @@
-#%%
+# %%
 import os
 import pandas as pd
 import json
@@ -40,9 +40,9 @@ def get_features(conn, tracks_array):
             else:
                 # print("Get Failed after 10 attempts")
                 raise(e)
-        except  spotipy.SpotifyException as e:
+        except spotipy.SpotifyException as e:
             # print(e)
-            count +=1
+            count += 1
             if count < 20:
                 time.sleep(15)
                 pass
@@ -96,11 +96,12 @@ def get_playlists_from_file(path, conn):
         features_res = []
         for track in playlist["tracks"]:
             track_uri_arr.append(track["track_uri"])
-        while len(track_uri_arr) >0:
-            track_uri_arr, req_tracks= cut_songs_modified(track_uri_arr)
+        while len(track_uri_arr) > 0:
+            track_uri_arr, req_tracks = cut_songs_modified(track_uri_arr)
             features_res += get_features(conn, req_tracks)
         dataframe_storage.append(pd.DataFrame(features_res))
     return dataframe_storage
+
 
 def get_playlists_from_file_NoFeats(path):
     # Open path to json file, load json data
@@ -109,6 +110,7 @@ def get_playlists_from_file_NoFeats(path):
     for playlist in data['playlists']:
         all_playlists.append(playlist["tracks"])
     return all_playlists
+
 
 def cut_songs_dict(tracks: dict):
     request_tracks = dict()
@@ -141,8 +143,11 @@ def audio_features_df_knn(path, conn):
 
     df = pd.DataFrame.from_dict(
         data=file_tracks, orient='index', columns=field_names)
-    df = df.drop(['analysis_url', 'track_href',
-                  'uri', 'id', 'type'], axis='columns')
+    try:
+        df = df.drop(['analysis_url', 'track_href',
+                      'uri', 'id', 'type'], axis='columns')
+    except KeyError:
+        pass
     print(df)
     return df
 
@@ -171,4 +176,3 @@ def get_all_tracks(data_dir):
     print("results compiled in: " + str(time.time()-time_start))
     print("Average Time: " + str(sum(file_times.values())/len(file_times)))
     return all_tracks
-
