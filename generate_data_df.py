@@ -41,7 +41,7 @@ for file_path in tqdm(sorted(data_dir.glob('mpd.slice.*.json'), key=alphanum_key
     file_dfs = get_playlists_from_file(file_path, spotify)
     array_df += file_dfs
 
-with open('all_data.pkl', 'wb') as handle:
+with open('all_data_noNA.pkl', 'wb') as handle:
     pickle.dump(array_df, handle)
-with open('all_data.pkl', 'rb') as handle:
+with open('all_data_noNA.pkl', 'rb') as handle:
     read_array_df = pickle.load(handle)
