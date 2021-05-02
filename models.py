@@ -24,6 +24,9 @@ from sklearn.metrics import f1_score
 from sklearn.metrics import accuracy_score
 from sklearn.neighbors import KNeighborsClassifier
 
+from playlists import spotify_conn, get_track_info, audio_features_df_knn
+from pathlib import Path
+
 # I needed this to allow the use of my GPU
 # physical_devices = tf.config.list_physical_devices('GPU')
 # tf.config.experimental.set_memory_growth(physical_devices[0], True)
@@ -128,7 +131,12 @@ def get_nth(y_arr):
         return round(math.sqrt(len(y_arr)))
 
 
-def knn(df):
+file_dir = Path(__file__).parent
+data_dir = file_dir / 'data'
+spotify = spotify_conn(file_dir / 'keys.json')
+
+
+def knn(model, df):
     df.dropna(inplace=True)
     print(df.columns)
     # split
@@ -147,18 +155,25 @@ def knn(df):
 
     # Define and fit model
     nth = get_nth(y_test)
-    classifier = KNeighborsClassifier(n_neighbors=nth, p=2, metric='euclidean')
-    classifier.fit(X_train, y_train)
+    # classifier = KNeighborsClassifier(n_neighbors=500, p=2, metric='euclidean')
+    model.fit(X_train, y_train)
 
     # Predict
-    y_pred = classifier.predict(X_test)
-    print("y_pred -> ", y_pred)
-    # Evaluate
-    cm = confusion_matrix(y_test, y_pred)
-    print("confusion matrix -> ", cm)
-    print("f1 ->", f1_score(y_test, y_pred, average='micro'))
-    print("accuracy -> ", accuracy_score(y_test, y_pred))
-    return y_pred
+    # y_pred = model.predict(X_test)
+    # print("y_pred -> ", y_pred)
+    # print("y_pred length", y_pred.shape)
+
+    # track_name = get_track_info(spotify, y_pred[0])
+    # print("PREDICTED TRACK NAME -> ", track_name["name"])
+    # track_artist = get_track_info(spotify, y_pred[0])
+    # print("PREDICTED ARTIST NAME -> ", track_artist["artists"][0]["name"])
+
+    # # Evaluate
+    # # cm = confusion_matrix(y_test, y_pred)
+    # # print("confusion matrix -> ", cm)
+    # print("f1 ->", f1_score(y_test, y_pred, average='micro'))
+    # print("accuracy -> ", accuracy_score(y_test, y_pred))
+    return model
 
 
 def xgboost(array_of_df):
