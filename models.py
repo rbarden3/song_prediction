@@ -142,7 +142,7 @@ def knn(model, df):
     # split
     X = list(df.T.to_dict('list').values())
     y = list(df.T.to_dict('list').keys())
-    # print("y", y)
+    # # print("y", y)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
     # print('Xtrain -> ', X_train)
     # print('X_test -> ', X_test)
@@ -154,7 +154,7 @@ def knn(model, df):
     # X_test = sc_X.transform(X_test)
 
     # Define and fit model
-    nth = get_nth(y_test)
+    # nth = get_nth(y_test)
     # classifier = KNeighborsClassifier(n_neighbors=500, p=2, metric='euclidean')
     model.fit(X_train, y_train)
 

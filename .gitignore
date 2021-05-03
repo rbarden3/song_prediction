@@ -14,3 +14,7 @@ saved_model/saved_model.pb
 saved_model/variables/variables.data-00000-of-00001
 saved_model/variables/variables.index
 finalizedKNNModel.sav
+EPOCHSAVE_rnn_history_800000_D2021-04-30-T19-37/variables/variables.index
+EPOCHSAVE_rnn_history_800000_D2021-04-30-T19-37/variables/variables.data-00000-of-00001
+EPOCHSAVE_rnn_history_800000_D2021-04-30-T19-37/saved_model.pb
+EPOCHSAVE_rnn_history_800000_D2021-04-30-T19-37/keras_metadata.pb
