@@ -20,6 +20,9 @@ from models import random_forest, knn, sequential_model, build_sequential_model
 from sorter import alphanum_key
 
 
+epoch_file = 'EPOCHSAVE_rnn_history_800000_D2021-04-30-T19-37'
+model = tf.keras.models.load_model(epoch_file, compile=True)
+
 # File Imports
 # from test import audio_features_df_knn
 
