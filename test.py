@@ -35,3 +35,4 @@ array_df_noNA = []
 for df in read_array_df:
     if not len(df) <2:
         array_df_noNA.append(df)
+
